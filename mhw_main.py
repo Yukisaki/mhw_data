@@ -185,9 +185,9 @@ if __name__ == '__main__':
             soubi_list_5.append(soubi_dict)
     f2write.close()
 
-    f2write = open(r'data.txt', 'rU', encoding='utf-8')
+    f2write = open(r'data_zokusei.txt', 'rU', encoding='utf-8')
     for line in f2write.readlines():
-        zokusei_list.append(line)
+        zokusei_list.append(line.rstrip('\n'))
     f2write.close()
 
     rare = 4
@@ -198,7 +198,7 @@ if __name__ == '__main__':
     soubi_list_5 = list(filter(lambda x: x['rare'] >= rare, soubi_list_5))
 
     filter_condition_keys = {u'弱点特効': 2, u'超会心': 1, u'体術': 2, u'回避性能': 1}
-    if not zokusei_key_check:
+    if not zokusei_key_check(filter_condition_keys):
         print('属性存在しない!')
     else:
         filter_soubi_list_1 = get_filter_soubi_list(filter_condition_keys.keys(), soubi_list_1)
