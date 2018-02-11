@@ -136,10 +136,23 @@ def zokusei_filter(zokusei, soubi_list):
 
 
 def get_filter_soubi_list(filter_keys, soubi_list):
-    filter_soubi_list = []
-    for key in filter_keys:
-        filter_soubi_list = filter_soubi_list + zokusei_filter(key, soubi_list)
-    return filter_soubi_list
+    if filter_keys:
+        filter_soubi_list = []
+        for key in filter_keys:
+            filter_soubi_list = filter_soubi_list + zokusei_filter(key, soubi_list)
+        seen = set()  
+        filter_soubi_list_new = []  
+        for soubi_dict in filter_soubi_list:
+            name = soubi_dict['name']
+            if name not in seen:
+                seen.add(name)
+                filter_soubi_list_new.append(soubi_dict)
+        if len(filter_soubi_list_new) == 0:
+            return soubi_list
+        else:
+            return filter_soubi_list_new
+    else:
+        return soubi_list[:]
 
 
 def get_filter_value(filter_condition_keys, part, filter_values_old):
@@ -190,14 +203,21 @@ if __name__ == '__main__':
         zokusei_list.append(line.rstrip('\n'))
     f2write.close()
 
-    rare = 4
+    rare = 6
     soubi_list_1 = list(filter(lambda x: x['rare'] >= rare, soubi_list_1))
     soubi_list_2 = list(filter(lambda x: x['rare'] >= rare, soubi_list_2))
     soubi_list_3 = list(filter(lambda x: x['rare'] >= rare, soubi_list_3))
     soubi_list_4 = list(filter(lambda x: x['rare'] >= rare, soubi_list_4))
     soubi_list_5 = list(filter(lambda x: x['rare'] >= rare, soubi_list_5))
 
-    filter_condition_keys = {u'弱点特効': 2, u'超会心': 1, u'体術': 2, u'回避性能': 1}
+    # a1 = list(filter(lambda x: x['slot_lv']['lv1'] + x['slot_lv']['lv2'] + x['slot_lv']['lv3'] >= 3, soubi_list_1))
+    # a2 = list(filter(lambda x: x['slot_lv']['lv1'] + x['slot_lv']['lv2'] + x['slot_lv']['lv3'] >= 3, soubi_list_2))
+    # a3 = list(filter(lambda x: x['slot_lv']['lv1'] + x['slot_lv']['lv2'] + x['slot_lv']['lv3'] >= 3, soubi_list_3))
+    # a4 = list(filter(lambda x: x['slot_lv']['lv1'] + x['slot_lv']['lv2'] + x['slot_lv']['lv3'] >= 3, soubi_list_4))
+    # a5 = list(filter(lambda x: x['slot_lv']['lv1'] + x['slot_lv']['lv2'] + x['slot_lv']['lv3'] >= 2, soubi_list_5))
+
+    # filter_condition_keys = {u'弱点特効': 2, u'超会心': 0, u'体術': 0, u'回避性能': 4, u'回避距離UP': 2, u'精霊の加護': 0, u'特殊射撃強化': 0}
+    filter_condition_keys = {u'弱点特効': 2, u'超会心': 0, u'体術': 0, u'挑戦者': 2, u'攻撃': 2, u'スタミナ急速回復': 3, u'特殊射撃強化': 0}
     if not zokusei_key_check(filter_condition_keys):
         print('属性存在しない!')
     else:
@@ -237,7 +257,7 @@ if __name__ == '__main__':
                 filter_values = get_filter_value(filter_condition_keys, part, filter_values)
             # if kaihi >= 5:
             # if tokkou == 3 and kaisin == 1 and taijutu >= 3 and kaihi >= 0:
-            if if_satisfied(filter_condition_keys, filter_values):
+            if if_satisfied(filter_condition_keys, filter_values) and (total_lv2_slot + total_lv3_slot) >= 3:
             # if total_skill_level >= 15:
                 soubi_st = ''
                 for x in comb:
